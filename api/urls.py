@@ -1,9 +1,9 @@
 from django.conf.urls import url
-from .views import uploadPhoto
+from .views import recognizePhoto
 
 
 app_name = 'api'
 
 urlpatterns = [
-    url(r'^uploadPhoto', uploadPhoto, name='uploadPhoto')
+    url(r'^recognizePhoto', recognizePhoto, name='recognizePhoto')
 ]
