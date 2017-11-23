@@ -1,5 +1,9 @@
 from django.http import JsonResponse
 
+from .neural_net import Network, TRAINING, load_png
+
+zaz = None
+
 
 # Create your views here.
 def recognizePhoto(request):
@@ -8,8 +12,7 @@ def recognizePhoto(request):
             file = request.FILES['myFile']
             type = file.name.split('.')[-1]
             if type == 'png':
-                # нейронка здеся
-                return JsonResponse({'ok': True})
+                return JsonResponse({'ok': Network.predict(load_png(file))})
             return JsonResponse({'ok': False,
                                  'error': 'type must be png'})
         return JsonResponse({'ok': False,
@@ -30,3 +33,10 @@ def learnDigit(request):
 
 def learnMnist(request):
     return JsonResponse({'mnist': 'epta'})
+
+
+def teach(request):
+    global zaz
+    zaz = Network(350)
+    zaz.train(2, TRAINING)
+    return JsonResponse({'ok': 'true'})
