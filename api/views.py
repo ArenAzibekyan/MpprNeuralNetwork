@@ -18,7 +18,15 @@ def recognizePhoto(request):
                          'error': 'send method must be POST'})
 
 
-def recordFile(file):
-    with open('static/name.png', 'wb+') as dest:
-        for chunk in file.chunks():
-            dest.write(chunk)
+def learnDigit(request):
+    if request.method == 'POST':
+        data = request.POST
+        print(data)
+        file = request.FILES
+        return JsonResponse({'ok': True})
+    return JsonResponse({'ok': False,
+                         'error': 'send method must be POST'})
+
+
+def learnMnist(request):
+    return JsonResponse({'mnist': 'epta'})
