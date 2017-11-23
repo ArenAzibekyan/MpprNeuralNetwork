@@ -1,4 +1,16 @@
 from django.http import JsonResponse
+from PIL import Image
+import io
+
+
+#Function to convert image to array or list
+def imageToCsv(file):
+    img = file.read()
+    img = Image.open(io.BytesIO(img))
+    rawPixels = list(img.getdata())
+    pixels = [1 if (sum(rgb[:3]) / 3) > 127 else 0 for rgb in rawPixels]
+    return pixels
+
 
 
 # Create your views here.
@@ -8,7 +20,8 @@ def recognizePhoto(request):
             file = request.FILES['myFile']
             type = file.name.split('.')[-1]
             if type == 'png':
-                # нейронка здеся
+                l = imageToCsv(file)
+                print(l)
                 return JsonResponse({'ok': True})
             return JsonResponse({'ok': False,
                                  'error': 'type must be png'})
