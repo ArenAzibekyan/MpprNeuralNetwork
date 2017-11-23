@@ -1,1 +1,153 @@
-/*Максим, дезигнить пилить вот здесь*/
+@font-face {
+    font-family: Lobster;
+    src: url(../fonts/Lobster-Regular.ttf);
+}
+
+.nav-tabs > li, .nav-pills > li {
+    font-size: 18pt;
+    font-family: Lobster !important;
+    float: none;
+    display: inline-block;
+    *display: inline; /* ie7 fix */
+    zoom: 1; /* hasLayout ie7 trigger */
+}
+
+.nav-tabs, .nav-pills {
+    text-align: center;
+}
+
+a:link
+{
+   color: black;
+   text-decoration: none;
+}
+a:visited
+{
+   color: black;
+   text-decoration: none;
+}
+a:hover
+{
+   color: black;
+   text-decoration: none;
+}
+a:active
+{
+   color: black;
+   text-decoration: none;
+}
+
+.transparent-bg {
+    background-color: rgba(255, 255, 255, .5) !important;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, .3);
+}
+
+#background {
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+}
+
+#background:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 200%;
+    height: 100%;
+
+    content: '';
+    animation: Gradient 10s ease infinite;
+
+    background: linear-gradient(-45deg, #1fa2ff, #a6ffcb);
+}
+
+button {
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+    border-radius: 0 !important;
+    background-image: none !important;
+}
+
+#undo > span {
+    transform: scale(-1, 1);
+}
+
+#undo {
+    left: 110px;
+}
+
+#redo {
+    right: 110px;
+}
+
+#undo,
+#redo {
+    z-index: 1;
+    position: absolute;
+    bottom: 0;
+}
+
+h2,
+h3,
+button {
+    font-family: Lobster !important;
+}
+
+.number {
+    font-family: Lobster !important;
+    font-size: 24pt;
+    line-height: 0.5;
+}
+
+#pad {
+    padding: 0;
+    margin: auto;
+    background-color: white;
+    outline: black 0px solid;
+}
+
+#result {
+    padding: 0;
+    margin: auto;
+    outline: black 0px solid;
+}
+
+#learning-speed-slider {
+    width: 100%;
+}
+
+#detect > .row > div:nth-child(2) {
+    display: inline-block !important;
+}
+
+hr {
+    border-top: 1px solid black;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+}
+
+.container-fluid {
+    min-width: 730px;
+    text-align: center;
+    margin: auto;
+}
+
+@keyframes Gradient {
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-50%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}

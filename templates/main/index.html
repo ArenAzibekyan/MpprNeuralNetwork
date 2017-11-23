@@ -2,21 +2,376 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Is Max a trap?</title>
-	<link rel="stylesheet" type="text/css" href='{% static "css/bootstrap.css" %}'>
-	<link rel="stylesheet" type="text/css" href='{% static "css/bootstrap-theme.css" %}'>
-	<link rel="stylesheet" type="text/css" href='{% static "css/myStyle.css" %}'>
+    <title>Neural Network</title>
+    <link rel="stylesheet" type="text/css" href='{% static "css/bootstrap.min.css" %}'>
+    <link rel="stylesheet" type="text/css" href='{% static "css/bootstrap-theme.min.css" %}'>
+    <link rel="stylesheet" type="text/css" href='{% static "css/bootstrap-slider.min.css" %}'>
+    <link rel="stylesheet" type="text/css" href='{% static "css/myStyle.css" %}'>
 </head>
 <body>
-	<p>Интерфейс выгрузки фотки на сервак</p>
-	<form method="post" enctype="multipart/form-data" action='{% url "api:recognizePhoto" %}'>
-		{% csrf_token %}
-		<input type="file" name="myFile">
-		<input type="submit" name="submitBtn">
-	</form>
-
-	<script type="text/javascript" src='{% static "js/jquery-3.2.1.js" %}'></script>
-	<script type="text/javascript" src='{% static "js/bootstrap.min.js" %}'></script>
-	<script type="text/javascript" src='{% static "js/myScript.js" %}'></script>
+{% csrf_token %}
+<div id="background"></div>
+<div class="container-fluid recognise transparent-bg">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#learn" role="tab" data-toggle="tab">Обучение</a></li>
+        <li role="presentation"><a href="#detect" role="tab" data-toggle="tab">Распознавание</a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane fade in active" id="learn">
+            <div class="row">
+                <div class="col-lg-6"><h2>Скорость обучения</h2>
+                    <br>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <input id="learning-speed" data-slider-id='learning-speed-slider' type="text"
+                                   data-slider-min="0.1" data-slider-max="0.9" data-slider-step="1"
+                                   data-slider-value="14"/>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <button id="teach" class="btn btn-success btn-block">Обучить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6"><h2>Процент ошибок</h2>
+                    <div id="errors">
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">0</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-error-0"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">1</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-error-1"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">2</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-error-2"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">3</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-error-3"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">4</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-error-4"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">5</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-error-5"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar"
+                                         style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">6</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-error-6"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar"
+                                         style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">7</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-error-7"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">8</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-error-8"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">9</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-error-9"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade" id="detect">
+            <div class="row">
+                <div class="col-lg-6"><h2>Ввод</h2>
+                    <button id="undo" class="btn btn-danger"><span class="glyphicon
+                        glyphicon-repeat"></span></button>
+                    <button id="redo" class="btn btn-info"><span class="glyphicon
+                        glyphicon-repeat"></span></button>
+                    <canvas id="pad"></canvas>
+                </div>
+                <div class="col-lg-6"><h2>Вывод</h2>
+                    <div id="result">
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">0</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-0"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">1</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-1"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">2</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-2"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">3</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-3"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">4</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-4"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">5</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-5"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar"
+                                         style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">6</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-6"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar"
+                                         style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">7</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-7"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">8</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-8"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-1">
+                                <span class="number">9</span>
+                            </div>
+                            <div class="col-lg-11">
+                                <div class="progress">
+                                    <div id="progress-9"
+                                         class="progress-bar progress-bar-striped progress-bar-success active"
+                                         role="progressbar" style="width:0%">
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <button id="recogniseSubmit" class="btn btn-success btn-block btn-lg">Распознать</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src='{% static "js/jquery-3.2.1.min.js" %}'></script>
+<script type="text/javascript" src='{% static "js/bootstrap.min.js" %}'></script>
+<script type="text/javascript" src='{% static "js/bootstrap-slider.min.js" %}'></script>
+<script type="text/javascript" src='{% static "js/sketchpad.js" %}'></script>
+<script type="text/javascript" src='{% static "js/myScript.js" %}'></script>
 </body>
 </html>
