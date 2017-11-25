@@ -130,7 +130,7 @@ $('#recogniseSubmit').click(function() {
             // с
             // дальше брать проценты и отображать
             else {
-                console.log('success');
+                console.log(response.values);
             }
         });
         deferred.fail(function() {
@@ -181,7 +181,8 @@ $('#teach').click(function() {
         type: 'GET',
         url: 'api/learnMnist',
         data: {
-            epochCount: $('#learning-speed').val()
+            // epochCount: $('#learning-speed').val()
+            epochCount: 5
         },
         success: function(response) {
             console.log(response);
