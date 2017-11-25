@@ -1,42 +1,42 @@
 from django.http import JsonResponse
-
-from .neural_net import Network, TRAINING, load_png
-
-zaz = None
+from django import forms
 
 
-# Create your views here.
-def recognizePhoto(request):
+# распознать фотку
+# форма
+class recognizeDigitForm(forms.Form):
+    digitPhoto = forms.ImageField()
+# вьюха
+def recognizeDigit(request):
     if request.method == 'POST':
-        if 'myFile' in request.FILES:
-            file = request.FILES['myFile']
-            type = file.name.split('.')[-1]
-            if type == 'png':
-                return JsonResponse({'ok': Network.predict(load_png(file))})
-            return JsonResponse({'ok': False,
-                                 'error': 'type must be png'})
+        form = recognizeDigitForm(request.POST, request.FILES)
+        if form.is_valid():
+            # нейронка
+            return JsonResponse({'ok': True})
         return JsonResponse({'ok': False,
-                             'error': 'file must be selected'})
+                             'error': 'form data validation error'})
     return JsonResponse({'ok': False,
                          'error': 'send method must be POST'})
 
 
+# обучить одну цифру
+# форма
+class learnDigitForm(forms.Form):
+    digitPhoto = forms.ImageField()
+    value = forms.CharField()
+# вьюха
 def learnDigit(request):
     if request.method == 'POST':
-        data = request.POST
-        print(data)
-        file = request.FILES
-        return JsonResponse({'ok': True})
+        form = learnDigitForm(request.POST, request.FILES)
+        if form.is_valid():
+            # нейронка
+            return JsonResponse({'ok': True})
+        return JsonResponse({'ok': False,
+                             'error': 'form data validation error'})
     return JsonResponse({'ok': False,
                          'error': 'send method must be POST'})
 
 
-def learnMnist(request):
-    return JsonResponse({'mnist': 'epta'})
-
-
-def teach(request):
-    global zaz
-    zaz = Network(350)
-    zaz.train(2, TRAINING)
-    return JsonResponse({'ok': 'true'})
+def learnMnist(request, epochCount):
+    epochCount = int(epochCount)
+    return JsonResponse({'count': epochCount})

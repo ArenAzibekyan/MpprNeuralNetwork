@@ -112,29 +112,79 @@ $('#redo').click(function() {
 $('#recogniseSubmit').click(function() {
     document.getElementById('pad').toBlob(function(e) {
         var data = new FormData();
-        data.append('myFile', e, 'image.png');
-        $.ajax({
+        data.append('digitPhoto', e, 'image.png');
+        deferred = $.ajax({
             type: 'POST',
             processData: false,
             contentType: false,
-            url: 'api/recognizePhoto',
-            data: data,
-            success: function(response) {
-                console.log('success!')
+            url: 'api/recognizeDigit',
+            data: data
+        });
+        deferred.done(function(response) {
+            if (!response.ok) {
+                console.log(response.error);
             }
-        })
-    })
+            // м
+            // а
+            // к
+            // с
+            // дальше брать проценты и отображать
+            else {
+                console.log('success');
+            }
+        });
+        deferred.fail(function() {
+            console.log('Не удается распознать! Сервер недоступен');
+        });
+    });
 });
+
+// м
+// а
+// к
+// с
+// пример апи как слать фотку цифры на обучение и эту самую цифру
+
+// $('#teach').click(function() {
+//     document.getElementById('pad').toBlob(function(e) {
+//         var data = new FormData();
+//         data.append('digitPhoto', e, 'image.png');
+//         data.append('value', 2);
+//         deferred = $.ajax({
+//             type: 'POST',
+//             processData: false,
+//             contentType: false,
+//             url: 'api/learnDigit',
+//             data: data
+//         });
+//         deferred.done(function(response) {
+//             if (!response.ok) {
+//                 console.log(response.error);
+//             }
+//             // м
+//             // а
+//             // к
+//             // с
+//             // дальше брать проценты и отображать
+//             else {
+//                 console.log('success');
+//             }
+//         });
+//         deferred.fail(function() {
+//             console.log('Не удается распознать! Сервер недоступен');
+//         });
+//     });
+// });
 
 $('#teach').click(function() {
     $.ajax({
-        type: 'POST',
-        url: 'api/teach',
+        type: 'GET',
+        url: 'api/learnMnist',
         data: {
-            'speed': $('#learning-speed').val()
+            epochCount: $('#learning-speed').val()
         },
         success: function(response) {
-            console.log('success!')
+            console.log(response);
         }
     })
 });
