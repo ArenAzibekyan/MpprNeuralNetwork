@@ -103,8 +103,10 @@ button {
     margin: auto;
     outline: black 0px solid;
 }
-#learning-speed-slider {
-    width: 100%;
+.slider,
+#learning-speed-slider,
+#network-add-slider {
+    width: 100% !important;
 }
 #detect > .row > div:nth-child(2) {
     display: inline-block !important;
