@@ -217,12 +217,21 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel">Выберите значение</h4>
+                <h2 class="modal-title" id="myModalLabel">Выберите значение</h4>
             </div>
             <div class="modal-body">
+            	<h3>Цифра</h2>
                 <input id="network-add-slider" type="text" data-slider-ticks="[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"
                        data-slider-ticks-snap-bounds="30" data-slider-ticks-labels='["0", "1", "2", "3", "4", "5",
                        "6", "7", "8", "9"]'/>
+                <br/>
+                <br/>
+                <h3>Количество эпох</h2>
+                <input id="learning-speed-add" data-slider-id='learning-speed-add-slider' type="text"
+                                   data-slider-min="1" data-slider-max="200" data-slider-step="1"
+                                   data-slider-value="20"/>
+                <br/>
+                <br/>
                 <br/>
             </div>
             <div class="modal-footer">

@@ -10,7 +10,7 @@
     display: inline-block;
     *display: inline;
     /* ie7 fix */
-
+    
     zoom: 1;
     /* hasLayout ie7 trigger */
 }
@@ -84,6 +84,7 @@ button {
 }
 h2,
 h3,
+h4,
 button {
     font-family: Lobster !important;
 }

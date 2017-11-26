@@ -22,7 +22,7 @@ function csrfSafeMethod(method) {
 }
 
 $.ajaxSetup({
-    beforeSend: function (xhr, settings) {
+    beforeSend: function(xhr, settings) {
         if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
         }
@@ -31,9 +31,14 @@ $.ajaxSetup({
 
 var slider_flag = false;
 
-$(document).ready(function () {
+$(document).ready(function() {
     $("#network-add-slider").bootstrapSlider();
     $('#learning-speed').slider({
+        step: 1,
+        tooltip: 'always',
+        tooltip_position: 'bottom'
+    });
+    $('#learning-speed-add').slider({
         step: 1,
         tooltip: 'always',
         tooltip_position: 'bottom'
@@ -54,17 +59,17 @@ var pad = new Sketchpad({
 pad.penSize = 20;
 pad.color = 'black';
 
-$('#undo').click(function () {
+$('#undo').click(function() {
     pad.undo();
 });
 
-$('#redo').click(function () {
+$('#redo').click(function() {
     pad.redo();
 });
 
 function draw_prediction(arr) {
-    arr.forEach(function (inner_array) {
-        inner_array.forEach(function (item, i) {
+    arr.forEach(function(inner_array) {
+        inner_array.forEach(function(item, i) {
             var value = parseInt(item * 100);
             var myclass = "progress-bar progress-bar-striped progress-bar-success active";
             if (66 >= value && value > 33) {
@@ -79,16 +84,16 @@ function draw_prediction(arr) {
             $('#progress-' + i).text(value + '%');
         })
     })
-    setTimeout(function () {
+    setTimeout(function() {
         var $container = $('#result');
-        $container.find('.row').sort(function (a, b) {
+        $container.find('.row').sort(function(a, b) {
             return +b.getAttribute('data-sort') - +a.getAttribute('data-sort');
         }).appendTo($container);
     }, 600)
 }
 
-$('#recogniseSubmit').click(function () {
-    document.getElementById('pad').toBlob(function (e) {
+$('#recogniseSubmit').click(function() {
+    document.getElementById('pad').toBlob(function(e) {
         var data = new FormData();
         data.append('digitPhoto', e, 'image.png');
         deferred = $.ajax({
@@ -98,14 +103,14 @@ $('#recogniseSubmit').click(function () {
             url: 'api/recognizeDigit',
             data: data
         });
-        deferred.done(function (response) {
+        deferred.done(function(response) {
             if (!response.ok) {
                 console.log(response.error);
             } else {
                 draw_prediction(response.values);
             }
         });
-        deferred.fail(function () {
+        deferred.fail(function() {
             console.log('Не удается распознать! Сервер недоступен');
         });
     });
@@ -113,20 +118,20 @@ $('#recogniseSubmit').click(function () {
 
 // пример апи как слать фотку цифры на обучение и эту самую цифру
 
-$('#recogniseAdd').click(function () {
+$('#recogniseAdd').click(function() {
     $('#network-add-modal').modal('show');
-    if (!slider_flag) setTimeout(function () {
+    if (!slider_flag) setTimeout(function() {
         $("#network-add-slider").bootstrapSlider('refresh');
         slider_flag = true;
     }, 500)
 });
 
-$('#recognise-add-ok').click(function () {
-    document.getElementById('pad').toBlob(function (e) {
+$('#recognise-add-ok').click(function() {
+    document.getElementById('pad').toBlob(function(e) {
         var data = new FormData();
         data.append('digitPhoto', e, 'image.png');
         data.append('value', $("#network-add-slider").val());
-        data.append('epochCount', 1)
+        data.append('epochCount', $('#learning-speed-add').val())
         deferred = $.ajax({
             type: 'POST',
             processData: false,
@@ -134,40 +139,39 @@ $('#recognise-add-ok').click(function () {
             url: 'api/learnDigit',
             data: data
         });
-        deferred.done(function (response) {
+        deferred.done(function(response) {
             if (!response.ok) {
                 console.log(response.error);
-            }
-            else {
+            } else {
                 console.log('success');
             }
         });
-        deferred.fail(function () {
+        deferred.fail(function() {
             console.log('Не удается распознать! Сервер недоступен');
         });
     });
     $('#network-add-modal').modal('hide');
 });
 
-$('#teach').click(function () {
+$('#teach').click(function() {
     $.ajax({
         type: 'GET',
         url: 'api/learnMnist',
         data: {
             epochCount: $('#learning-speed').val()
-            // epochCount: 5
+                // epochCount: 5
         },
-        success: function (response) {
+        success: function(response) {
             console.log(response);
         }
     })
 });
 
-$('#reset').click(function () {
+$('#reset').click(function() {
     $.ajax({
         type: 'GET',
         url: 'api/resetTrain',
-        success: function (response) {
+        success: function(response) {
             console.log(response);
         }
     })
