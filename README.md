@@ -1,9 +1,9 @@
-# ВАШ РЕПОЗИТОРИЙ ЗАХВАТИЛА ВООРУЖЁННАЯ ЛОЛЯ
-![Аниме](https://i.imgur.com/PfM4lHj.jpg)
+# Handwritten Digit Recognizing Neural Network
+Using Python, Keras, MNIST
 
 # Required packages:
 - Django
-- Keras
-- Numpy
 - Pillow
 - TensorFlow==1.3.0
+- Keras
+- Numpy
