@@ -17,6 +17,7 @@ import numpy as np
 # модель нейросети
 model = None
 graph = None
+weight = None
 
 
 # распознать фотку
@@ -28,7 +29,7 @@ def recognizeDigit(request):
     if request.method == 'POST':
         form = recognizeDigitForm(request.POST, request.FILES)
         if form.is_valid():
-            global model
+            global model, graph
             if model:
                 X_recognize = imgToArray(request.FILES['digitPhoto'].read())
                 X_recognize = X_recognize.reshape(1, 784)
@@ -62,21 +63,23 @@ def learnDigit(request):
                 return JsonResponse({'ok': False,
                                      'error': 'form data validation error'})
             else:
-                global model, graph
+                global model, graph, weight
                 if not model:
                     graph = tf.get_default_graph()
                     model = createModel()
-                X_train = imgToArray(request.FILES['digitPhoto'].read())
-                X_train = X_train.reshape(1, 784)
-                Y_train = [0] * 10
-                Y_train[value] = 1
-                Y_train = np.array(Y_train)
-                Y_train = Y_train.reshape(1, 10)
-                print(X_train.shape[0], 'train sample')
-                # обучение
-                model.fit(X_train, Y_train,
-                          batch_size=128, epochs=epochCount,
-                          verbose=2)
+                    weight = model.get_weights()
+                with graph.as_default():
+                    X_train = imgToArray(request.FILES['digitPhoto'].read())
+                    X_train = X_train.reshape(1, 784)
+                    Y_train = [0] * 10
+                    Y_train[value] = 1
+                    Y_train = np.array(Y_train)
+                    Y_train = Y_train.reshape(1, 10)
+                    print(X_train.shape[0], 'train sample')
+                    # обучение
+                    model.fit(X_train, Y_train,
+                              batch_size=128, epochs=epochCount,
+                              verbose=2)
                 return JsonResponse({'ok': True})
         return JsonResponse({'ok': False,
                              'error': 'form data validation error'})
@@ -99,31 +102,33 @@ def learnMnist(request):
                 return JsonResponse({'ok': False,
                                      'error': 'GET params validation error'})
             else:
-                global model, graph
+                global model, graph, weight
                 if not model:
                     graph = tf.get_default_graph()
                     model = createModel()
-                # заготовленная база мниста
-                (X_train, y_train), (X_test, y_test) = mnist.load_data()
-                # требуемый формат
-                X_train = X_train.reshape(60000, 784)
-                X_test = X_test.reshape(10000, 784)
-                # из int [0;255] сделать float [0;1]
-                X_train = X_train.astype('float32')
-                X_test = X_test.astype('float32')
-                X_train /= 255
-                X_test /= 255
-                # вывод размерности перед обучением
-                print(X_train.shape[0], 'train samples')
-                print(X_test.shape[0], 'test samples')
-                # 10 классов на выход
-                Y_train = np_utils.to_categorical(y_train, 10)
-                Y_test = np_utils.to_categorical(y_test, 10)
-                # обучение
-                model.fit(X_train, Y_train,
-                          batch_size=128, epochs=epochCount,
-                          verbose=2,
-                          validation_data=(X_test, Y_test))
+                    weight = model.get_weights()
+                with graph.as_default():
+                    # заготовленная база мниста
+                    (X_train, y_train), (X_test, y_test) = mnist.load_data()
+                    # требуемый формат
+                    X_train = X_train.reshape(60000, 784)
+                    X_test = X_test.reshape(10000, 784)
+                    # из int [0;255] сделать float [0;1]
+                    X_train = X_train.astype('float32')
+                    X_test = X_test.astype('float32')
+                    X_train /= 255
+                    X_test /= 255
+                    # вывод размерности перед обучением
+                    print(X_train.shape[0], 'train samples')
+                    print(X_test.shape[0], 'test samples')
+                    # 10 классов на выход
+                    Y_train = np_utils.to_categorical(y_train, 10)
+                    Y_test = np_utils.to_categorical(y_test, 10)
+                    # обучение
+                    model.fit(X_train, Y_train,
+                              batch_size=128, epochs=epochCount,
+                              verbose=2,
+                              validation_data=(X_test, Y_test))
                 return JsonResponse({'ok': True})
         return JsonResponse({'ok': False,
                              'error': 'GET params validation error'})
@@ -135,9 +140,11 @@ def learnMnist(request):
 # сбросить состояние обучения
 def resetTrain(request):
     if request.method == 'GET':
-        global model
+        global model, graph, weight
         if model:
-            model = createModel()
+            print('Reset train -> setting initial weights')
+            with graph.as_default():
+                model.set_weights(weight)
             return JsonResponse({'ok': True})
         return JsonResponse({'ok': False,
                              'error': 'neural network model isn\'t created'})
