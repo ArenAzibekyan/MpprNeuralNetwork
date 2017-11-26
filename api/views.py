@@ -138,7 +138,7 @@ def resetTrain(request):
         global model
         if model:
             model = createModel()
-            return JsonResponse({'ok', True})
+            return JsonResponse({'ok': True})
         return JsonResponse({'ok': False,
                              'error': 'neural network model isn\'t created'})
     return JsonResponse({'ok': False,
