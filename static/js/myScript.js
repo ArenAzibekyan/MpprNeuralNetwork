@@ -67,6 +67,14 @@ $('#redo').click(function() {
     pad.redo();
 });
 
+function loading_start() {
+    $('#loading').fadeIn('slow');
+}
+
+function loading_finish() {
+    $('#loading').fadeOut('slow');
+}
+
 function draw_prediction(arr) {
     arr.forEach(function(inner_array) {
         inner_array.forEach(function(item, i) {
@@ -105,18 +113,16 @@ $('#recogniseSubmit').click(function() {
         });
         deferred.done(function(response) {
             if (!response.ok) {
-                console.log(response.error);
+                alert(response.error);
             } else {
                 draw_prediction(response.values);
             }
         });
         deferred.fail(function() {
-            console.log('Не удается распознать! Сервер недоступен');
+            alert('Не удается распознать! Сервер недоступен');
         });
     });
 });
-
-// пример апи как слать фотку цифры на обучение и эту самую цифру
 
 $('#recogniseAdd').click(function() {
     $('#network-add-modal').modal('show');
@@ -127,6 +133,7 @@ $('#recogniseAdd').click(function() {
 });
 
 $('#recognise-add-ok').click(function() {
+    loading_start();
     document.getElementById('pad').toBlob(function(e) {
         var data = new FormData();
         data.append('digitPhoto', e, 'image.png');
@@ -140,29 +147,30 @@ $('#recognise-add-ok').click(function() {
             data: data
         });
         deferred.done(function(response) {
+            loading_finish();
             if (!response.ok) {
-                console.log(response.error);
+                alert(response.error);
             } else {
                 console.log('success');
             }
         });
         deferred.fail(function() {
-            console.log('Не удается распознать! Сервер недоступен');
+            alert('Не удается распознать! Сервер недоступен');
         });
     });
     $('#network-add-modal').modal('hide');
 });
 
 $('#teach').click(function() {
+    loading_start();
     $.ajax({
         type: 'GET',
         url: 'api/learnMnist',
         data: {
             epochCount: $('#learning-speed').val()
-                // epochCount: 5
         },
         success: function(response) {
-            console.log(response);
+            loading_finish();
         }
     })
 });
