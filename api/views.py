@@ -32,7 +32,7 @@ def recognizeDigit(request):
             global model, graph
             if model:
                 X_recognize = imgToArray(request.FILES['digitPhoto'].read())
-                X_recognize = X_recognize.reshape(1, 784)
+                X_recognize = X_recognize.reshape(1, 70)
                 with graph.as_default():
                     Y_recognize = model.predict(X_recognize, batch_size=128, verbose=0)
                     return JsonResponse({'ok': True,
@@ -70,7 +70,7 @@ def learnDigit(request):
                     weight = model.get_weights()
                 with graph.as_default():
                     X_train = imgToArray(request.FILES['digitPhoto'].read())
-                    X_train = X_train.reshape(1, 784)
+                    X_train = X_train.reshape(1, 70)
                     Y_train = [0] * 10
                     Y_train[value] = 1
                     Y_train = np.array(Y_train)
@@ -110,14 +110,13 @@ def learnMnist(request):
                 with graph.as_default():
                     # заготовленная база мниста
                     (X_train, y_train), (X_test, y_test) = mnist.load_data()
+                    # удаление лишнего с фоток
+                    print('cropping mnist digits')
+                    X_train = np.array([mnistDigitCrop(mnistDigit) for mnistDigit in X_train])
+                    X_test = np.array([mnistDigitCrop(mnistDigit) for mnistDigit in X_test])
                     # требуемый формат
-                    X_train = X_train.reshape(60000, 784)
-                    X_test = X_test.reshape(10000, 784)
-                    # из int [0;255] сделать float [0;1]
-                    X_train = X_train.astype('float32')
-                    X_test = X_test.astype('float32')
-                    X_train /= 255
-                    X_test /= 255
+                    X_train = X_train.reshape(60000, 70)
+                    X_test = X_test.reshape(10000, 70)
                     # вывод размерности перед обучением
                     print(X_train.shape[0], 'train samples')
                     print(X_test.shape[0], 'test samples')
@@ -158,13 +157,15 @@ def createModel():
     np.random.seed(1337)
     # создание модели
     model = Sequential()
-    # добавление слоев
-    model.add(Dense(512, input_shape=(784,)))
+    # 70 на вход
+    model.add(Dense(40, input_shape=(70,)))
     model.add(Activation('relu'))
     model.add(Dropout(0.2))
-    model.add(Dense(512))
+    # 40 скрытый
+    model.add(Dense(40))
     model.add(Activation('relu'))
     model.add(Dropout(0.2))
+    # 10 на выход
     model.add(Dense(10))
     model.add(Activation('softmax'))
     # Use rmsprop to do the gradient descent see http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf
@@ -179,7 +180,21 @@ def createModel():
 # получить numpy массив на 784 элемента из фотки
 def imgToArray(bin):
     img = Image.open(io.BytesIO(bin))
-    img = img.resize((28, 28), Image.ANTIALIAS)
-    pixels = [(t[3] / 255) for t in img.getdata()]
-    array = np.array(pixels, np.float32)
+    img = img.crop(img.getbbox())
+    img = img.resize((7, 10), Image.ANTIALIAS)
+    alphas = [(t[3] / 255) for t in img.getdata()]
+    array = np.array(alphas, np.float32)
+    return array
+
+
+#
+# обрезать лишнее и кропнуть с разрешением 7 на 10
+def mnistDigitCrop(mnistDigit):
+    data = [(0, 0, 0, alpha) for row in mnistDigit.tolist() for alpha in row]
+    img = Image.new('RGBA', (28, 28))
+    img.putdata(data)
+    img = img.crop(img.getbbox())
+    img = img.resize((7, 10), Image.ANTIALIAS)
+    alphas = [(t[3] / 255) for t in img.getdata()]
+    array = np.array(alphas, np.float32)
     return array
